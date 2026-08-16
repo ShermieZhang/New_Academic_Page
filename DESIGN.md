@@ -15,18 +15,18 @@ colors:
 typography:
   display:
     fontFamily: "Bodoni MT, Didot, Songti SC, STSong, Palatino Linotype, Georgia, serif"
-    fontSize: "clamp(3rem, 6vw, 5.125rem)"
+    fontSize: "clamp(2.375rem, 4.8vw, 4rem)"
     fontWeight: 500
-    lineHeight: 0.94
-    letterSpacing: "-0.035em"
+    lineHeight: 0.98
+    letterSpacing: "-0.03em"
   body:
     fontFamily: "Segoe UI, Microsoft YaHei, Arial, sans-serif"
-    fontSize: "15px"
+    fontSize: "17px"
     fontWeight: 400
     lineHeight: 1.8
   label:
     fontFamily: "Segoe UI, Microsoft YaHei, Arial, sans-serif"
-    fontSize: "10px"
+    fontSize: "11px"
     fontWeight: 800
     lineHeight: 1.4
     letterSpacing: "0.15em"
@@ -59,12 +59,12 @@ components:
 
 **Creative North Star: "The Monet Research Atlas"**
 
-The site behaves like five chapters of one personal academic atlas. Pale color fields, porcelain-like reading surfaces, precise rules, and restrained mineral texture provide personality without weakening scholarly clarity. Typography carries most of the authority; imagery is atmospheric and never used as a pseudo-rigorous diagram.
+The site behaves like five consecutive chapters of one personal academic atlas. Visitors can read the complete profile by scrolling, while the persistent navigation acts as a fast chapter index. Pale color fields, porcelain-like reading surfaces, precise rules, and restrained mineral texture provide personality without weakening scholarly clarity. Typography carries most of the authority; imagery is atmospheric and never used as a pseudo-rigorous diagram.
 
 **Key Characteristics:**
 
 - English identity leads; Chinese identity is a quiet secondary signature.
-- Large editorial serif headings establish presence, while compact sans-serif labels organize evidence.
+- Moderately scaled editorial serif headings establish presence, while generously sized sans-serif text keeps the evidence comfortable to read.
 - Lavender, blush, blue, yellow, and jade appear as low-saturation fields rather than scattered accents.
 - Square edges and fine rules keep the composition disciplined.
 
@@ -80,11 +80,11 @@ The full palette is soft and luminous, with dark violet-gray ink maintaining aca
 
 **Body Font:** Segoe UI or Microsoft YaHei, falling back to Arial.
 
-Display type is elegant and personal; body and label type remain neutral, compact, and highly legible. Headings use tight but not compressed tracking, and paragraphs stay within readable measures.
+Display type is elegant and personal; body and label type remain neutral and highly legible. The display scale is intentionally restrained so chapter titles do not overpower the scholarship, while body copy and metadata are larger than conventional portfolio microtype. Headings use tight but not compressed tracking, and paragraphs stay within readable measures.
 
 ## Layout
 
-Desktop chapters use a centered 1180px reading width, a persistent 76px navigation bar, and asymmetric editorial grids. Mobile collapses every grid to a single column at 850px while preserving the full five-item navigation in a horizontal scroller. Section spacing follows a quiet 8/16/28/48/74px rhythm.
+The five chapters form one uninterrupted document, with distinct tonal fields marking each transition. Desktop chapters use a centered 1180px reading width, a persistent 76px navigation bar, and asymmetric editorial grids. Each navigation item points to a section anchor and the active underline follows the reader's scroll position. Mobile collapses every grid to a single column at 850px while preserving the full five-item navigation in a horizontal scroller. Section spacing follows a quiet 8/16/28/48/74px rhythm.
 
 ## Elevation & Depth
 
@@ -104,7 +104,7 @@ Buttons are square, compact, and label-driven. Primary actions use deep violet w
 
 ### Navigation
 
-Navigation is a translucent sticky paper strip. Active state is expressed by a short pink-lavender-blue underline and `aria-current`, not by a filled tab.
+Navigation is a translucent sticky paper strip and a quick index into the continuous page. Active state follows the visible chapter and is expressed by a short pink-lavender-blue underline and `aria-current`, not by a filled tab.
 
 ### Research Architecture
 

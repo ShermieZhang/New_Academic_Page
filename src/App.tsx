@@ -5,24 +5,11 @@ import { FormEvent, MouseEvent, useEffect, useState } from 'react';
   OWN-WORLD: Monet lavender-pink-blue fields, porcelain reading surfaces, fine rules, and one feathered mineral name brush.
   STORY: Meet Shimin, understand her research agenda and papers, inspect teaching and credentials, then make contact.
   FIRST VIEWPORT: English name and research identity lead beside a portrait; the primary action opens Research.
-  FORM: A user-approved five-chapter atlas implemented as hash-addressable pages; the approved preview is the visual authority.
+  FORM: A user-approved five-chapter atlas arranged as one continuous page; the navigation is a fast chapter index.
 */
 
 const routes = ['home', 'research', 'teaching', 'cv', 'contact'] as const;
 type Route = (typeof routes)[number];
-
-const pageTitles: Record<Route, string> = {
-  home: 'Shimin Zhang · Academic Profile',
-  research: 'Research · Shimin Zhang',
-  teaching: 'Teaching · Shimin Zhang',
-  cv: 'CV · Shimin Zhang',
-  contact: 'Contact · Shimin Zhang',
-};
-
-const routeFromLocation = (): Route => {
-  const value = window.location.hash.replace('#', '');
-  return routes.includes(value as Route) ? (value as Route) : 'home';
-};
 
 type ContactFields = {
   name: string;
@@ -32,29 +19,42 @@ type ContactFields = {
 };
 
 function App() {
-  const [route, setRoute] = useState<Route>(routeFromLocation);
+  const [activeSection, setActiveSection] = useState<Route>('home');
   const [contact, setContact] = useState<ContactFields>({ name: '', email: '', subject: '', message: '' });
   const [formStatus, setFormStatus] = useState('');
 
   useEffect(() => {
-    const syncRoute = () => setRoute(routeFromLocation());
-    window.addEventListener('hashchange', syncRoute);
-    window.addEventListener('popstate', syncRoute);
+    const updateActiveSection = () => {
+      const readingLine = window.scrollY + Math.min(window.innerHeight * 0.36, 340);
+      let current: Route = 'home';
+      routes.forEach((item) => {
+        const section = document.getElementById(item);
+        if (section && section.offsetTop <= readingLine) current = item;
+      });
+      setActiveSection(current);
+    };
+
+    const followHash = () => {
+      const value = window.location.hash.replace('#', '') as Route;
+      if (!routes.includes(value)) return;
+      window.requestAnimationFrame(() => document.getElementById(value)?.scrollIntoView({ block: 'start' }));
+    };
+
+    updateActiveSection();
+    followHash();
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('hashchange', followHash);
     return () => {
-      window.removeEventListener('hashchange', syncRoute);
-      window.removeEventListener('popstate', syncRoute);
+      window.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('hashchange', followHash);
     };
   }, []);
 
-  useEffect(() => {
-    document.title = pageTitles[route];
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  }, [route]);
-
-  const navigate = (next: Route) => {
-    const target = next === 'home' ? window.location.pathname : `#${next}`;
-    window.history.pushState(null, '', target);
-    setRoute(next);
+  const navigate = (event: MouseEvent<HTMLAnchorElement>, next: Route) => {
+    event.preventDefault();
+    window.history.pushState(null, '', `#${next}`);
+    document.getElementById(next)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setActiveSection(next);
   };
 
   const updateContact = (field: keyof ContactFields, value: string) => {
@@ -69,36 +69,30 @@ function App() {
     window.location.href = mailto;
   };
 
-  const skipToContent = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    document.getElementById('main')?.focus();
-  };
-
   return (
     <>
-      <a className="skip-link" href="#main" onClick={skipToContent}>Skip to content</a>
+      <a className="skip-link" href="#main">Skip to content</a>
       <header className="site-header">
-        <button className="brand" type="button" onClick={() => navigate('home')}>Shimin Zhang <span>张时敏</span></button>
+        <a className="brand" href="#home" onClick={(event) => navigate(event, 'home')}>Shimin Zhang <span>张时敏</span></a>
         <div className="nav-scroller" aria-label="Page navigation">
           <nav className="site-nav">
             {routes.map((item) => (
-              <button
+              <a
                 className="nav-link"
-                type="button"
                 key={item}
-                aria-current={route === item ? 'page' : undefined}
-                onClick={() => navigate(item)}
+                href={`#${item}`}
+                aria-current={activeSection === item ? 'location' : undefined}
+                onClick={(event) => navigate(event, item)}
               >
                 {item === 'cv' ? 'CV' : item[0].toUpperCase() + item.slice(1)}
-              </button>
+              </a>
             ))}
           </nav>
         </div>
       </header>
 
       <main id="main" tabIndex={-1}>
-        {route === 'home' && (
-          <section className="page page-home is-active" aria-labelledby="home-title">
+          <section className="page page-home" id="home" aria-labelledby="home-title">
             <div className="home-stage">
               <img className="home-art" src="/art/monet-decentralized-research-map-v3.png" alt="" />
               <div className="page-inner home-grid">
@@ -109,7 +103,7 @@ function App() {
                   <p className="home-lead">Researching the market structure and economic incentives of blockchain-based financial markets, with a focus on Bitcoin, cryptocurrencies, tokenization, stablecoins and AI agents in finance.</p>
                   <div className="affiliations"><span>National University of Singapore · AIDF</span></div>
                   <div className="action-row">
-                    <button className="action primary" type="button" onClick={() => navigate('research')}>View Research</button>
+                    <a className="action primary" href="#research" onClick={(event) => navigate(event, 'research')}>View Research</a>
                     <a className="action" href="/ShiminZhang_resume202608.pdf" download>Download CV</a>
                   </div>
                 </div>
@@ -117,10 +111,8 @@ function App() {
               </div>
             </div>
           </section>
-        )}
 
-        {route === 'research' && (
-          <section className="page page-research is-active" aria-labelledby="research-title">
+          <section className="page page-research" id="research" aria-labelledby="research-title">
             <div className="page-inner chapter">
               <header className="chapter-head">
                 <div><span className="chapter-index">Research chapter</span><p className="chapter-kicker">Dissertation & Working Papers</p><h1 className="chapter-title" id="research-title">Market structure and incentives in blockchain-based asset markets.</h1></div>
@@ -145,10 +137,8 @@ function App() {
               </div>
             </div>
           </section>
-        )}
 
-        {route === 'teaching' && (
-          <section className="page page-teaching is-active" aria-labelledby="teaching-title">
+          <section className="page page-teaching" id="teaching" aria-labelledby="teaching-title">
             <div className="page-inner chapter">
               <header className="chapter-head"><div><span className="chapter-index">Knowledge in motion</span><p className="chapter-kicker">Graduate Teaching</p><h1 className="chapter-title" id="teaching-title">Teaching machine learning through financial applications.</h1></div><p className="chapter-intro">Graduate-level teaching support in grading and tutorials for Machine Learning for Finance at the National University of Singapore.</p></header>
               <div className="teaching-spread">
@@ -158,10 +148,8 @@ function App() {
               <div className="teaching-note"><strong>Graduate teaching grounded in applied methods.</strong><p>The course connects technical models with financial problems, data-driven analysis and practical FinTech applications.</p></div>
             </div>
           </section>
-        )}
 
-        {route === 'cv' && (
-          <section className="page page-cv is-active" aria-labelledby="cv-title">
+          <section className="page page-cv" id="cv" aria-labelledby="cv-title">
             <div className="page-inner chapter">
               <div className="cv-top"><header><span className="chapter-index">Academic ledger</span><p className="chapter-kicker">Academic Credentials</p><h1 className="chapter-title" id="cv-title">Curriculum Vitae</h1></header><a className="action primary" href="/ShiminZhang_resume202608.pdf" download>Download Full CV (PDF)</a></div>
               <div className="ledger">
@@ -172,10 +160,8 @@ function App() {
               <div className="cv-support"><div><h2>Research toolkit</h2><p>AI Agent, Python, R, MATLAB, Stata, Solidity and LaTeX. Languages: Mandarin Chinese and English.</p></div><div><h2>Academic service & engagement</h2><p>Subreviewer for Hawai'i Accounting Research Conference 2026, with conference participation across blockchain economics, finance and tokenomics.</p><p className="ra-whisper"><strong>Supporting experience:</strong> Research Assistant, National University of Singapore, 09.2021–08.2022.</p></div></div>
             </div>
           </section>
-        )}
 
-        {route === 'contact' && (
-          <section className="page page-contact is-active" aria-labelledby="contact-title">
+          <section className="page page-contact" id="contact" aria-labelledby="contact-title">
             <div className="page-inner chapter">
               <header className="chapter-head"><div><span className="chapter-index">Open collaboration</span><p className="chapter-kicker">Get In Touch</p><h1 className="chapter-title" id="contact-title">Connect around research and teaching.</h1></div><p className="chapter-intro">For academic opportunities, research collaboration, seminars and teaching conversations, email is the clearest point of contact.</p></header>
               <div className="contact-stage">
@@ -184,7 +170,6 @@ function App() {
               </div>
             </div>
           </section>
-        )}
       </main>
 
       <footer className="site-footer"><span>© {new Date().getFullYear()} Shimin Zhang</span><span>Academic research · Digital Financial Technology</span></footer>
